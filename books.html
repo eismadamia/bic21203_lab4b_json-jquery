@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Collection</title>
+
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #fff0f6;
+    color: #4a1830;
+    font-family: Arial, sans-serif;
+  }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .label {
+    color: #ff1493;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 8px 0;
+    color: #ff1493;
+    font-size: 36px;
+  }
+
+  .intro {
+    margin-bottom: 28px;
+    color: #8c5570;
+    line-height: 1.6;
+  }
+
+  .summary, .book-card {
+    margin-bottom: 16px;
+    padding: 20px;
+    border: 1px solid #ffc1dc;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 5px 18px #ff14931a;
+  }
+
+  .summary p {
+    margin: 8px 0;
+  }
+
+  h2 {
+    margin: 0 0 12px;
+    color: #e60073;
+    font-size: 20px;
+  }
+
+  .book-card h2 {
+    color: #ff1493;
+  }
+
+  .genre {
+    margin: 0;
+    color: #8c5570;
+  }
+
+  .error {
+    padding: 16px;
+    border-radius: 10px;
+    background: #ffe0eb;
+    color: #a00050;
+  }
+</style>
+</head>
+
+<body>
+  <main>
+    <p class="label">BIC21203 · Lab 4b</p>
+    <h1>Book Collection</h1>
+    <p class="intro">Book details loaded from a JSON file.</p>
+
+    <section id="output" aria-live="polite">Loading books…</section>
+  </main>
+
+  <script>
+    async function loadBooks() {
+      const output = document.querySelector("#output");
+
+      try {
+        const response = await fetch("books.json");
+
+        if (!response.ok) {
+          throw new Error("Could not load books.json");
+        }
+
+        const data = await response.json();
+
+        if (!data.books || data.books.length < 2) {
+          throw new Error("The book data is incomplete");
+        }
+
+        output.textContent = "";
+
+        const summary = document.createElement("div");
+        summary.className = "summary";
+
+        const firstBook = document.createElement("p");
+        firstBook.textContent = `First book title: ${data.books[0].title}`;
+
+        const secondAuthor = document.createElement("p");
+        secondAuthor.textContent = `Second book author: ${data.books[1].author}`;
+
+        summary.appendChild(firstBook);
+        summary.appendChild(secondAuthor);
+        output.appendChild(summary);
+
+        const heading = document.createElement("h2");
+        heading.textContent = "Genres by book";
+        output.appendChild(heading);
+
+        for (const book of data.books) {
+          const card = document.createElement("div");
+          card.className = "book-card";
+
+          const title = document.createElement("h2");
+          title.textContent = book.title;
+
+          const genres = document.createElement("p");
+          genres.className = "genre";
+          genres.textContent = book.genres.join(", ");
+
+          card.appendChild(title);
+          card.appendChild(genres);
+          output.appendChild(card);
+        }
+      } catch (error) {
+        output.textContent =
+          "Sorry, the book data could not be loaded. Check the files and try again.";
+        output.className = "error";
+      }
+    }
+
+    loadBooks();
+  </script>
+</body>
+</html>
